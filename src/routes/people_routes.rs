@@ -6,6 +6,7 @@ use crate::controller::people_controller::{
     get_person,
     update_person,
     delete_person,
+    greeting
 };
 
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -17,5 +18,6 @@ pub fn config(cfg: &mut web::ServiceConfig) {
                 .route("/{id}", web::get().to(get_person))
                 .route("/{id}", web::put().to(update_person))
                 .route("/{id}", web::delete().to(delete_person))
+                .route("/greeting/{name}", web::get().to(greeting))
         );
 }

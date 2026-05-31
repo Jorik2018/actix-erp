@@ -1,7 +1,7 @@
 use std::env;
 use actix_web::{App, HttpServer, web};
-use surrealdb::engine::any;
-use surrealdb::opt::auth::Root;
+use tokio::sync::Mutex;
+use surrealdb::engine::any::Any;
 use surrealdb::Surreal;
 
 mod routes;
@@ -13,41 +13,43 @@ mod controller;
 use repository::people_repository::PeopleRepository;
 use service::people_service::PeopleService;
 
+#[derive(Clone)]
+pub struct DbConfig {
+    pub url: String,
+    pub user: String,
+    pub pass: String,
+    pub ns: String,
+    pub db: String,
+}
+
+pub struct AppState {
+    pub config: DbConfig,
+    pub conn: Mutex<Option<Surreal<Any>>>,
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    let config = DbConfig {
+        url: env::var("SURREALDB_URL").unwrap_or_default(),
+        user: env::var("SURREALDB_USER").unwrap_or_default(),
+        pass: env::var("SURREALDB_PASS").unwrap_or_default(),
+        ns: env::var("SURREALDB_NS").unwrap_or_else(|_| "demo".into()),
+        db: env::var("SURREALDB_DB").unwrap_or_else(|_| "surreal_deal_store".into()),
+    };
 
-    // 🔌 Conexión a SurrealDB
-let db_url = env::var("SURREALDB_URL").expect("SURREALDB_URL no definido");
-let db_user = env::var("SURREALDB_USER").expect("SURREALDB_USER no definido");
-let db_pass = env::var("SURREALDB_PASS").expect("SURREALDB_PASS no definido");
-let db_ns = env::var("SURREALDB_NS").unwrap_or("demo".into());
-let db_name = env::var("SURREALDB_DB").unwrap_or("surreal_deal_store".into());
+    let state = web::Data::new(AppState {
+        config,
+        conn: Mutex::new(None),
+    });
 
-let db = any::connect(db_url)
-    .await
-    .expect("Error conectando a SurrealDB");
-
-db.signin(Root {
-    username: db_user,
-    password: db_pass,
-}).await.expect("Error en login");
-
-db.use_ns(db_ns)
-    .use_db(db_name)
-    .await
-    .expect("Error seleccionando DB");
-
-    // 🧱 Inyección de dependencias
-    let repo = PeopleRepository::new(db);
+    let repo = PeopleRepository::new(state.clone());
     let service = web::Data::new(PeopleService::new(repo));
 
-    println!("🚀 Server corriendo en http://127.0.0.1:8080");
-
-    // 🌐 Servidor Actix
     HttpServer::new(move || {
         App::new()
+            .app_data(state.clone())
             .app_data(service.clone())
-            .configure(routes::people_routes::config) // tu config aquí
+            .configure(routes::people_routes::config)
     })
     .bind(("127.0.0.1", 8080))?
     .run()

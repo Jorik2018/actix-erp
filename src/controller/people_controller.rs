@@ -2,6 +2,10 @@ use actix_web::{web, HttpResponse, Responder};
 use crate::service::people_service::PeopleService;
 use crate::model::people_model::Person;
 
+pub async fn greeting(name: web::Path<String>) -> impl Responder {
+    HttpResponse::Ok().body(format!("hi {}", name.into_inner()))
+}
+
 pub async fn create_person(
     service: web::Data<PeopleService>,
     payload: web::Json<Person>,
@@ -54,3 +58,4 @@ pub async fn delete_person(
         Err(_) => HttpResponse::InternalServerError().finish(),
     }
 }
+

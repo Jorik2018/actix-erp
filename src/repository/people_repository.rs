@@ -1,65 +1,51 @@
-use crate::model::people_model::Person;
-use surrealdb::Surreal;
+use actix_web::web;
 use surrealdb::engine::any::Any;
+use surrealdb::Surreal;
+use crate::repository::db::get_db;
+use crate::model::people_model::Person;
+use crate::AppState;
 
 pub struct PeopleRepository {
-    pub db: Surreal<Any>,
+    state: web::Data<AppState>,
 }
 
 impl PeopleRepository {
-    pub fn new(db: Surreal<Any>) -> Self {
-        Self { db }
+    pub fn new(state: web::Data<AppState>) -> Self {
+        Self { state }
     }
 
-    // CREATE
+    async fn db(&self) -> surrealdb::Result<Surreal<Any>> {
+        get_db(&self.state).await
+    }
+
     pub async fn create(&self, person: Person) -> surrealdb::Result<Person> {
-        let created: Option<Person> = self
-            .db
+        let db = self.db().await?;
+
+        let created: Option<Person> = db
             .create("person")
             .content(person)
             .await?;
-
         Ok(created.unwrap())
+        //created.ok_or_else(|| surrealdb::Error::Db("No se pudo crear la persona".into()))
     }
 
-    // READ ALL
     pub async fn find_all(&self) -> surrealdb::Result<Vec<Person>> {
-        let people: Vec<Person> = self
-            .db
-            .select("person")
-            .await?;
-
-        Ok(people)
+        let db = self.db().await?;
+        db.select("person").await
     }
 
-    // READ ONE
     pub async fn find_by_id(&self, id: &str) -> surrealdb::Result<Option<Person>> {
-        let person: Option<Person> = self
-            .db
-            .select(("person", id))
-            .await?;
-
-        Ok(person)
+        let db = self.db().await?;
+        db.select(("person", id)).await
     }
 
-    // UPDATE
     pub async fn update(&self, id: &str, person: Person) -> surrealdb::Result<Option<Person>> {
-        let updated: Option<Person> = self
-            .db
-            .update(("person", id))
-            .content(person)
-            .await?;
-
-        Ok(updated)
+        let db = self.db().await?;
+        db.update(("person", id)).content(person).await
     }
 
-    // DELETE
     pub async fn delete(&self, id: &str) -> surrealdb::Result<Option<Person>> {
-        let deleted: Option<Person> = self
-            .db
-            .delete(("person", id))
-            .await?;
-
-        Ok(deleted)
+        let db = self.db().await?;
+        db.delete(("person", id)).await
     }
 }
