@@ -29,7 +29,7 @@ let db = any::connect(db_url)
 
 db.signin(Root {
     username: db_user,
-    password: &db_pass,
+    password: db_pass,
 }).await.expect("Error en login");
 
 db.use_ns(db_ns)
