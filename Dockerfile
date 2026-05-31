@@ -1,10 +1,13 @@
+# =========================
 # Etapa 1: build
+# =========================
 FROM rust:latest AS builder
 
 WORKDIR /app
 
 COPY Cargo.toml Cargo.lock ./
 
+# cache dependencies
 RUN mkdir -p src && echo "fn main() {}" > src/main.rs
 RUN cargo build --release
 RUN rm -rf src
@@ -13,8 +16,11 @@ COPY . .
 
 RUN cargo build --release
 
-# Etapa 2: runtime
-FROM debian:bookworm-slim
+
+# =========================
+# Etapa 2: runtime FIX
+# =========================
+FROM ubuntu:24.04
 
 WORKDIR /app
 
