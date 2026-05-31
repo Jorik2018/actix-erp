@@ -1,5 +1,5 @@
 # Etapa 1: build
-FROM rust:1.90-bookworm AS builder
+FROM rust:latest AS builder
 
 WORKDIR /app
 
