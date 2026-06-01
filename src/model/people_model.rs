@@ -1,19 +1,14 @@
 use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 use surrealdb::types::RecordId;
+use surrealdb::types::Geometry;
 use surrealdb::types::SurrealValue;
-
-#[derive(SurrealValue,Serialize, Deserialize, Debug)]
-pub struct Coordinates {
-    pub lat: f64,
-    pub lng: f64,
-}
 
 #[derive(SurrealValue,Serialize, Deserialize, Debug)]
 pub struct Address {
     pub address_line_1: String,
     pub city: String,
-    pub coordinates: Coordinates,
+    pub coordinates: Geometry,
     pub country: String,
     pub post_code: String,
 }
