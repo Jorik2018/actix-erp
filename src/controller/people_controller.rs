@@ -21,7 +21,12 @@ pub async fn get_people(
 ) -> impl Responder {
     match service.get_all().await {
         Ok(list) => HttpResponse::Ok().json(list),
-        Err(_) => HttpResponse::InternalServerError().finish(),
+        Err(e) => {
+            eprintln!("Error en get_people: {:?}", e);
+            HttpResponse::InternalServerError().json(serde_json::json!({
+                "error": format!("{:?}", e)
+            }))
+        }
     }
 }
 
