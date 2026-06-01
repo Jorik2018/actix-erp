@@ -5,3 +5,5 @@ cargo run
 
 cargo watch -x run
 cargo build
+
+http://actix-erp-epinedo-dev.apps.rm3.7wse.p1.openshiftapps.com/people
