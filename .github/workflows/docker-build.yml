@@ -29,7 +29,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/actix-erp:2
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/actix-erp:3
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
