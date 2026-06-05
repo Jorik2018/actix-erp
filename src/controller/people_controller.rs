@@ -34,7 +34,8 @@ pub async fn get_person(
     service: web::Data<PeopleService>,
     path: web::Path<String>,
 ) -> impl Responder {
-    match service.get_by_id(&path).await {
+    let id = path.into_inner();
+    match service.get_by_id(&id).await {
         Ok(Some(person)) => HttpResponse::Ok().json(person),
         Ok(None) => HttpResponse::NotFound().finish(),
         Err(_) => HttpResponse::InternalServerError().finish(),
@@ -46,7 +47,8 @@ pub async fn update_person(
     path: web::Path<String>,
     payload: web::Json<Person>,
 ) -> impl Responder {
-    match service.update(&path, payload.into_inner()).await {
+    let id = path.into_inner();
+    match service.update(&id, payload.into_inner()).await {
         Ok(Some(person)) => HttpResponse::Ok().json(person),
         Ok(None) => HttpResponse::NotFound().finish(),
         Err(_) => HttpResponse::InternalServerError().finish(),
@@ -57,7 +59,8 @@ pub async fn delete_person(
     service: web::Data<PeopleService>,
     path: web::Path<String>,
 ) -> impl Responder {
-    match service.delete(&path).await {
+    let id = path.into_inner();
+    match service.delete(&id).await {
         Ok(Some(_)) => HttpResponse::Ok().finish(),
         Ok(None) => HttpResponse::NotFound().finish(),
         Err(_) => HttpResponse::InternalServerError().finish(),

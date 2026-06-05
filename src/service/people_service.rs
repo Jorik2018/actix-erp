@@ -1,5 +1,6 @@
-use crate::repository::people_repository::PeopleRepository;
+use crate::commons::AppResult;
 use crate::model::people_model::Person;
+use crate::repository::people_repository::PeopleRepository;
 use chrono::Utc;
 
 pub struct PeopleService {
@@ -11,7 +12,7 @@ impl PeopleService {
         Self { repo }
     }
 
-    pub async fn create(&self, mut person: Person) -> surrealdb::Result<Person> {
+    pub async fn create(&self, mut person: Person) -> AppResult<Person> {
         let now = Utc::now();
         person.time.created_at = now;
         person.time.updated_at = now;
@@ -19,20 +20,20 @@ impl PeopleService {
         self.repo.create(person).await
     }
 
-    pub async fn get_all(&self) -> surrealdb::Result<Vec<Person>> {
+    pub async fn get_all(&self) -> AppResult<Vec<Person>> {
         self.repo.find_all().await
     }
 
-    pub async fn get_by_id(&self, id: &str) -> surrealdb::Result<Option<Person>> {
+    pub async fn get_by_id(&self, id: &str) -> AppResult<Option<Person>> {
         self.repo.find_by_id(id).await
     }
 
-    pub async fn update(&self, id: &str, mut person: Person) -> surrealdb::Result<Option<Person>> {
+    pub async fn update(&self, id: &str, mut person: Person) -> AppResult<Option<Person>> {
         person.time.updated_at = Utc::now();
         self.repo.update(id, person).await
     }
 
-    pub async fn delete(&self, id: &str) -> surrealdb::Result<Option<Person>> {
+    pub async fn delete(&self, id: &str) -> AppResult<Option<Person>> {
         self.repo.delete(id).await
     }
 }

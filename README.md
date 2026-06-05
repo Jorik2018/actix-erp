@@ -7,3 +7,12 @@ cargo watch -x run
 cargo build
 
 http://actix-erp-epinedo-dev.apps.rm3.7wse.p1.openshiftapps.com/people
+
+
+
+
+actix-rt = "1.1.1"
+    bson = "1.0.0"
+    futures = "0.3.5"
+    MongoDB = "1.0.0"
+    rustc-serialize = "0.3.24"
