@@ -25,6 +25,7 @@ version = "0.1.0"
 dependencies = [
  "actix-web",
  "chrono",
+ "futures",
  "mongodb",
  "serde",
  "serde_json",

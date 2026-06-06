@@ -1,6 +1,6 @@
 use crate::commons::AppResult;
 use crate::model::people_model::Person;
-use crate::repository::people_repository::PeopleRepository;
+use crate::repository::people_surrealdb_repository::PeopleRepository;
 use chrono::Utc;
 
 pub struct PeopleService {

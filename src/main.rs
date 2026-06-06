@@ -11,7 +11,7 @@ mod repository;
 mod service;
 mod controller;
 mod commons;
-use repository::people_repository::PeopleRepository;
+use repository::people_surrealdb_repository::PeopleRepository;
 use service::people_service::PeopleService;
 
 #[derive(Clone)]

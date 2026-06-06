@@ -1,17 +1,18 @@
-use crate::AppState;
-use crate::commons::{AppError, AppResult};
-use crate::model::people_model::Person;
-use crate::repository::surrealdb_db::get_db;
 use actix_web::web;
 use surrealdb::Surreal;
 use surrealdb::engine::any::Any;
+use crate::{
+    AppState,
+    commons::{AppError, AppResult},
+    model::people_model::Person,
+    repository::surrealdb_db::get_db,
+};
 
 pub struct PeopleRepository {
     state: web::Data<AppState>,
 }
 
 impl PeopleRepository {
-
     pub fn new(state: web::Data<AppState>) -> Self {
         Self { state }
     }
@@ -63,5 +64,4 @@ impl PeopleRepository {
             .await
             .map_err(|e| AppError::Database(e.to_string()))
     }
-
 }
